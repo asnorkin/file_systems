@@ -8,8 +8,7 @@
 #include <dirent.h>
 
 
-/*int main() {
-
+int main() {
 	DIR* directory = NULL;
 	DIR* proc_directory = NULL;
 
@@ -18,8 +17,7 @@
 	char exec[5] = "exe";
 
 	directory = opendir("/proc");
-
-	if(directory == NULL) {
+	if(!directory) {
 		perror("Couldn't open '/proc'\n");
 		return errno;
 	}
@@ -27,47 +25,46 @@
 	do {
 		errno = 0;
 		if((dir_contence = readdir(directory)) != NULL) {
-			int PID;
-			PID = atoi(dir_contence -> d_name);
-			if(PID == 0) continue;
-																						printf("Proc: %d\n", PID);
-				
-
+			int PID = atoi(dir_contence->d_name);
+			if(PID == 0) 
+				continue;
+			
+			printf("Proc: %d\n", PID);
 
 			//Process internals
-				char dest[100] = "/proc/";
-				strcat(dest, dir_contence -> d_name);
-				proc_directory = opendir(dest);
-				if(proc_directory == NULL) {
-					perror("Couldn't open '/proc/[PID]'\n");
-					return errno;
-				}
-				strcat(dest, "/exe");
-				do {
-					errno = 0;
-					if((proc_contence = readdir(proc_directory)) != NULL) {
-						if(strcmp(proc_contence -> d_name, exec) != 0) continue;
-																						printf("	exe is found!\n");
-						char buf[1024];
-						ssize_t result = readlink(dest, buf, 1023);
-																						printf("%zd\n", result);
-						if(result == -1) {
-							perror("Problem with link!\n");
-							return errno;
-						}
-                        //buf[result] = '\0';
-                                                                                        //printf("		%s\n, buf");
+			char dest[100] = "/proc/";
+			strcat(dest, dir_contence->d_name);
+			proc_directory = opendir(dest);
+			if(proc_directory == NULL) {
+				perror("Couldn't open '/proc/[PID]'\n");
+				return errno;
+			}
+
+			strcat(dest, "/exe");
+			do {
+				errno = 0;
+				if((proc_contence = readdir(proc_directory)) != NULL) {
+					if(strcmp(proc_contence->d_name, exec) != 0) 
+						continue;
+
+					printf("	exe is found!\n");
+					
+					char buf[1024];
+					ssize_t result = readlink(dest, buf, 1023);
+					printf("%zd\n", result);
+					if(result == -1) {
+						perror("Problem with link!\n");
+						return errno;
 					}
-				} while (proc_contence != NULL);
-				(void)closedir(proc_directory);
-				proc_directory = NULL;
-				proc_contence = NULL;
+				}
+			} while (proc_contence);
 
-
-
+			(void)closedir(proc_directory);
+			proc_directory = NULL;
+			proc_contence = NULL;
 		}
-	} while (dir_contence != NULL);
+	} while (dir_contence);
 
 	(void)closedir(directory);
 	return 0;
-}*/
+}
