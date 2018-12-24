@@ -24,7 +24,7 @@ int main() {
 
 	do {
 		errno = 0;
-		if((dir_contence = readdir(directory)) != NULL) {
+		if((dir_contence = readdir(directory))) {
 			int PID = atoi(dir_contence->d_name);
 			if(PID == 0) 
 				continue;
